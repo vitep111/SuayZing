@@ -153,6 +153,44 @@ export const computeKpis = (monthly, annualYear1, startup) => ({
   annualRoiPct: startup.total > 0 ? (annualYear1.netProfit / startup.total) * 100 : 0,
 })
 
+// 12-month monthly series with the ramp-up curve applied. Used by the
+// dashboard for Cash Flow Projection and Monthly Profit Track. Starting
+// cash = startup capital minus total startup cost (the day-zero runway);
+// each month adds that month's net profit.
+export const computeMonthlySeries = (state) => {
+  const multiplier = activeMultiplier(state)
+  const services = state.services.map((s) => computeService(s, multiplier))
+  const baseRevenue = services.reduce((s, x) => s + x.revenue, 0)
+  const baseCogs = services.reduce((s, x) => s + x.cogs, 0)
+  const fixedCosts = computeFixedCostsTotal(state)
+  const startup = computeStartup(state)
+  const startingCash = state.startupCapital - startup.total
+
+  let cash = startingCash
+  return state.rampUpCurve.map((r, i) => {
+    const revenue = baseRevenue * r
+    const cogs = baseCogs * r
+    const grossProfit = revenue - cogs
+    const ebitda = grossProfit - fixedCosts
+    const tax = ebitda > 0 ? ebitda * state.taxRate : 0
+    const netProfit = ebitda - tax
+    cash += netProfit
+    return {
+      month: i + 1,
+      label: `M${i + 1}`,
+      revenue,
+      cogs,
+      grossProfit,
+      fixedCosts,
+      ebitda,
+      tax,
+      netProfit,
+      cumulativeCash: cash,
+      rampPct: r,
+    }
+  })
+}
+
 export const computeModel = (state) => {
   const multiplier = activeMultiplier(state)
   const services = state.services.map((s) => computeService(s, multiplier))

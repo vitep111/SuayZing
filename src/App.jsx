@@ -8,8 +8,10 @@ import FixedCostsTable from './components/FixedCostsTable'
 import StartupCostsTable from './components/StartupCostsTable'
 import GlobalSettings from './components/GlobalSettings'
 import RampUpEditor from './components/RampUpEditor'
+import Dashboard from './components/dashboard/Dashboard'
 
 const SECTIONS = [
+  { id: 'dashboard', label: 'Dashboard' },
   { id: 'services', label: 'Services' },
   { id: 'staff', label: 'Staff' },
   { id: 'fixed-costs', label: 'Fixed costs' },
@@ -99,6 +101,7 @@ function Layout() {
     <div className="min-h-screen bg-slate-50">
       <Header />
       <main className="mx-auto max-w-6xl space-y-6 px-6 py-8">
+        <Dashboard />
         <ServicesTable />
         <StaffTable />
         <FixedCostsTable />
@@ -106,7 +109,7 @@ function Layout() {
         <GlobalSettings />
         <RampUpEditor />
         <footer className="pt-4 text-center text-xs text-slate-400">
-          Phase 3 · input forms &amp; tables complete. Dashboard and charts land in Phase 4.
+          Phase 4 · dashboard, charts and smart alerts live. Phase 5 adds the 3-year projection.
         </footer>
       </main>
     </div>
