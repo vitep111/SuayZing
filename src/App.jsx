@@ -8,10 +8,12 @@ import FixedCostsTable from './components/FixedCostsTable'
 import StartupCostsTable from './components/StartupCostsTable'
 import GlobalSettings from './components/GlobalSettings'
 import RampUpEditor from './components/RampUpEditor'
+import ProjectionTable from './components/ProjectionTable'
 import Dashboard from './components/dashboard/Dashboard'
 
 const SECTIONS = [
   { id: 'dashboard', label: 'Dashboard' },
+  { id: 'projection', label: '3-year' },
   { id: 'services', label: 'Services' },
   { id: 'staff', label: 'Staff' },
   { id: 'fixed-costs', label: 'Fixed costs' },
@@ -102,6 +104,7 @@ function Layout() {
       <Header />
       <main className="mx-auto max-w-6xl space-y-6 px-6 py-8">
         <Dashboard />
+        <ProjectionTable />
         <ServicesTable />
         <StaffTable />
         <FixedCostsTable />
@@ -109,7 +112,8 @@ function Layout() {
         <GlobalSettings />
         <RampUpEditor />
         <footer className="pt-4 text-center text-xs text-slate-400">
-          Phase 4 · dashboard, charts and smart alerts live. Phase 5 adds the 3-year projection.
+          All five phases complete · inputs persist in your browser · scenario updates
+          recompute everything instantly.
         </footer>
       </main>
     </div>

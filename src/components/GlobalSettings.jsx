@@ -24,9 +24,9 @@ export default function GlobalSettings() {
     <Card
       id="settings"
       title="Global settings"
-      subtitle="Tax rate, capital, and growth assumptions used by the P&L and projections."
+      subtitle="Tax rate and available capital. Year 2 / 3 growth rates are set inline in the projection table."
     >
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Tax rate" hint="Applied only to positive EBITDA.">
           <div className="flex items-center gap-1">
             <NumberInput
@@ -47,28 +47,6 @@ export default function GlobalSettings() {
               min={0}
             />
             <span className="pr-1 text-xs text-slate-500">THB</span>
-          </div>
-        </Field>
-
-        <Field label="Year 2 growth" hint="Applied to every Y1 line item.">
-          <div className="flex items-center gap-1">
-            <NumberInput
-              value={state.growthRates.year2 * 100}
-              onChange={(v) => set(['growthRates', 'year2'], v / 100)}
-              fractionDigits={1}
-            />
-            <span className="pr-1 text-slate-500">%</span>
-          </div>
-        </Field>
-
-        <Field label="Year 3 growth" hint="Applied on top of Year 2.">
-          <div className="flex items-center gap-1">
-            <NumberInput
-              value={state.growthRates.year3 * 100}
-              onChange={(v) => set(['growthRates', 'year3'], v / 100)}
-              fractionDigits={1}
-            />
-            <span className="pr-1 text-slate-500">%</span>
           </div>
         </Field>
       </div>
