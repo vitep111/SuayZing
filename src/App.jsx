@@ -1,127 +1,122 @@
 import { useState } from 'react'
 import { AppStateProvider, useAppState } from './state/AppStateContext'
 import { computeModel } from './state/calculations'
+import ScenarioPicker from './components/ScenarioPicker'
+import ServicesTable from './components/ServicesTable'
+import StaffTable from './components/StaffTable'
+import FixedCostsTable from './components/FixedCostsTable'
+import StartupCostsTable from './components/StartupCostsTable'
+import GlobalSettings from './components/GlobalSettings'
+import RampUpEditor from './components/RampUpEditor'
 
-const SCENARIOS = [
-  { id: 'bear', label: 'Bear −30%' },
-  { id: 'base', label: 'Base' },
-  { id: 'bull', label: 'Bull +30%' },
-  { id: 'custom', label: 'Custom' },
+const SECTIONS = [
+  { id: 'services', label: 'Services' },
+  { id: 'staff', label: 'Staff' },
+  { id: 'fixed-costs', label: 'Fixed costs' },
+  { id: 'startup', label: 'Startup' },
+  { id: 'settings', label: 'Settings' },
+  { id: 'rampup', label: 'Ramp-up' },
 ]
 
-function ScenarioPicker() {
-  const { state, dispatch } = useAppState()
-  return (
-    <div className="flex flex-wrap items-center gap-2">
-      <span className="text-sm text-slate-600">Scenario:</span>
-      <div className="flex overflow-hidden rounded-md border border-slate-300 bg-white">
-        {SCENARIOS.map((s) => (
-          <button
-            key={s.id}
-            onClick={() => dispatch({ type: 'SET_SCENARIO', scenario: s.id })}
-            className={`px-3 py-1.5 text-sm ${
-              state.activeScenario === s.id
-                ? 'bg-slate-900 text-white'
-                : 'text-slate-700 hover:bg-slate-100'
-            }`}
-          >
-            {s.label}
-          </button>
-        ))}
-      </div>
-      {state.activeScenario === 'custom' && (
-        <label className="flex items-center gap-1 text-sm text-slate-600">
-          ×
-          <input
-            type="number"
-            step="0.05"
-            value={state.scenarios.custom}
-            onChange={(e) =>
-              dispatch({
-                type: 'SET_CUSTOM_MULTIPLIER',
-                value: Number(e.target.value) || 0,
-              })
-            }
-            className="w-20 rounded border border-slate-300 px-2 py-1"
-          />
-        </label>
-      )}
-    </div>
-  )
-}
+function Header() {
+  const { dispatch } = useAppState()
+  const [showInspector, setShowInspector] = useState(false)
 
-function Inspector() {
-  const { state, dispatch } = useAppState()
-  const model = computeModel(state)
-  const [showRaw, setShowRaw] = useState(false)
-
-  const btn =
-    'rounded border border-slate-300 bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-100'
+  const confirmReset = () => {
+    if (window.confirm('Reset all inputs to defaults? This cannot be undone.')) {
+      dispatch({ type: 'RESET' })
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6 sm:p-10">
-      <div className="mx-auto max-w-5xl space-y-6">
-        <header>
-          <h1 className="text-2xl font-bold text-slate-900">
-            SuayZing <span className="font-normal text-slate-400">· Feasibility Study</span>
-          </h1>
-          <p className="mt-1 text-sm text-slate-600">
-            Phase 2 complete — reactive calculation engine. Toggle scenarios or edit
-            <code className="mx-1 rounded bg-slate-200 px-1 py-0.5 text-xs">localStorage</code>
-            and watch the derived model recompute.
-          </p>
-        </header>
-
-        <div className="flex flex-wrap items-center gap-2">
+    <>
+      <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-6 py-3">
+          <div className="mr-auto">
+            <h1 className="text-lg font-bold text-slate-900">
+              SuayZing <span className="font-normal text-slate-400">· Feasibility Study</span>
+            </h1>
+            <p className="text-xs text-slate-500">
+              Interactive financial model · inputs persist in your browser
+            </p>
+          </div>
           <ScenarioPicker />
-          <div className="grow" />
-          <button className={btn} onClick={() => dispatch({ type: 'RESET' })}>
-            Reset
-          </button>
-          <button className={btn} onClick={() => dispatch({ type: 'ADD_SERVICE' })}>
-            + Service
-          </button>
-          <button className={btn} onClick={() => dispatch({ type: 'ADD_STAFF' })}>
-            + Staff
-          </button>
-          <button className={btn} onClick={() => dispatch({ type: 'ADD_FIXED_COST' })}>
-            + Fixed cost
-          </button>
-          <button className={btn} onClick={() => setShowRaw((v) => !v)}>
-            {showRaw ? 'Hide raw state' : 'Show raw state'}
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => setShowInspector((v) => !v)}
+              className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100"
+            >
+              {showInspector ? 'Hide' : 'Inspect'} model
+            </button>
+            <button
+              onClick={confirmReset}
+              className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100"
+            >
+              Reset
+            </button>
+          </div>
         </div>
+        <nav className="mx-auto max-w-6xl overflow-x-auto px-6 pb-2">
+          <ul className="flex gap-1 text-xs">
+            {SECTIONS.map((s) => (
+              <li key={s.id}>
+                <a
+                  href={`#${s.id}`}
+                  className="inline-block rounded-full border border-transparent px-3 py-1 text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                >
+                  {s.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </header>
 
-        <section>
-          <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
-            Computed model
-          </h2>
-          <pre className="max-h-[60vh] overflow-auto rounded-lg border border-slate-200 bg-white p-4 text-xs text-slate-800">
-            {JSON.stringify(model, null, 2)}
-          </pre>
-        </section>
+      {showInspector && <ModelInspector />}
+    </>
+  )
+}
 
-        {showRaw && (
-          <section>
-            <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
-              Raw state
-            </h2>
-            <pre className="max-h-[60vh] overflow-auto rounded-lg border border-slate-200 bg-white p-4 text-xs text-slate-800">
-              {JSON.stringify(state, null, 2)}
-            </pre>
-          </section>
-        )}
+function ModelInspector() {
+  const { state } = useAppState()
+  const model = computeModel(state)
+  return (
+    <div className="border-b border-slate-200 bg-slate-900 text-slate-100">
+      <div className="mx-auto max-w-6xl px-6 py-4">
+        <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">
+          Computed model (live)
+        </h2>
+        <pre className="max-h-[40vh] overflow-auto rounded-lg bg-slate-950 p-3 text-xs leading-relaxed">
+          {JSON.stringify(model, null, 2)}
+        </pre>
       </div>
     </div>
   )
 }
 
-function App() {
+function Layout() {
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <Header />
+      <main className="mx-auto max-w-6xl space-y-6 px-6 py-8">
+        <ServicesTable />
+        <StaffTable />
+        <FixedCostsTable />
+        <StartupCostsTable />
+        <GlobalSettings />
+        <RampUpEditor />
+        <footer className="pt-4 text-center text-xs text-slate-400">
+          Phase 3 · input forms &amp; tables complete. Dashboard and charts land in Phase 4.
+        </footer>
+      </main>
+    </div>
+  )
+}
+
+export default function App() {
   return (
     <AppStateProvider>
-      <Inspector />
+      <Layout />
     </AppStateProvider>
   )
 }
-
-export default App
